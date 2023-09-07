@@ -1,0 +1,116 @@
+{
+  "$schema": "https://raw.githubusercontent.com/dasheck0/phaser-boilerplate/master/schemas/scene.schema.json",
+  "scenes": [],
+  "groups": ["background", "game", "ui"],
+  "assets": [
+    {
+      "type": "image",
+      "name": "sample",
+      "url": "images/sample.png"
+    },
+    {
+      "type": "image",
+      "name": "background",
+      "url": "images/background.png"
+    },
+    {
+      "type": "image",
+      "name": "mockup_0",
+      "url": "images/mockup_0.png"
+    },
+    {
+      "type": "image",
+      "name": "mockup_1",
+      "url": "images/mockup_1.png"
+    },
+    {
+      "type": "image",
+      "name": "mockup_2",
+      "url": "images/mockup_2.png"
+    },
+    {
+      "type": "image",
+      "name": "mockup_3",
+      "url": "images/mockup_3.png"
+    },
+    {
+      "type": "image",
+      "name": "mockup_4",
+      "url": "images/mockup_4.png"
+    },
+    {
+      "type": "image",
+      "name": "mockup_5",
+      "url": "images/mockup_5.png"
+    },
+    {
+      "type": "image",
+      "name": "mockup_6",
+      "url": "images/mockup_6.png"
+    },
+    {
+      "type": "image",
+      "name": "mockup_7",
+      "url": "images/mockup_7.png"
+    },
+    {
+      "type": "image",
+      "name": "mockup_8",
+      "url": "images/mockup_8.png"
+    },
+    {
+      "type": "image",
+      "name": "mockup_9",
+      "url": "images/mockup_9.png"
+    }
+  ],
+  "prefabs": {
+    "background": {
+      "options": {
+        "type": "Sprite",
+        "anchor": {
+          "x": 0,
+          "y": 0
+        },
+        "group": "background",
+        "key": "background",
+        "position": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    "gameboard": {
+      "options": {
+        "type": "MemoryBoard",
+        "rowCount": 4,
+        "columnCount": 4,
+        "group": "game",
+        "covers": ["mockup_0", "mockup_1", "mockup_2", "mockup_3", "mockup_4", "mockup_5", "mockup_6", "mockup_7", "mockup_8", "mockup_9"]
+      }
+    },
+    "restartButton": {
+      "options": {
+        "type": "ImageButton",
+        "animation": "tint",
+        "animationDuration": 50,
+        "key": "sample",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "relative": true
+        },
+        "anchor": {
+          "x": 0,
+          "y": 0
+        },
+        "width": {
+          "value": 100
+        },
+        "height": {
+          "value": 100
+        }
+      }
+    }
+  }
+}
