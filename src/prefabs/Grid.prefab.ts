@@ -45,8 +45,8 @@ export default class Grid implements BasePrefab {
 
     this.background.clear();
     this.background.setPosition(positionX, positionY);
-    this.background.fillStyle(0x000000, 0.5);
-    this.background.fillRect(-xOffset, -yOffset, this.options.dimension.width, this.options.dimension.height);
+    // this.background.fillStyle(0x000000, 0.5);
+    // this.background.fillRect(-xOffset, -yOffset, this.options.dimension.width, this.options.dimension.height);
 
     for (let rowIndex = 0; rowIndex < this.options.rowCount; rowIndex++) {
       for (let columnIndex = 0; columnIndex < this.options.columnCount; columnIndex++) {

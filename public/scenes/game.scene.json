@@ -5,63 +5,78 @@
   "assets": [
     {
       "type": "image",
-      "name": "sample",
-      "url": "images/sample.png"
-    },
-    {
-      "type": "image",
       "name": "background",
       "url": "images/background.png"
     },
     {
       "type": "image",
-      "name": "mockup_0",
-      "url": "images/mockup_0.png"
+      "name": "cover_back",
+      "url": "images/cover_back.png"
     },
     {
       "type": "image",
-      "name": "mockup_1",
-      "url": "images/mockup_1.png"
+      "name": "cover_1",
+      "url": "images/cover_1.png"
     },
     {
       "type": "image",
-      "name": "mockup_2",
-      "url": "images/mockup_2.png"
+      "name": "cover_2",
+      "url": "images/cover_2.png"
     },
     {
       "type": "image",
-      "name": "mockup_3",
-      "url": "images/mockup_3.png"
+      "name": "cover_3",
+      "url": "images/cover_3.png"
     },
     {
       "type": "image",
-      "name": "mockup_4",
-      "url": "images/mockup_4.png"
+      "name": "cover_4",
+      "url": "images/cover_4.png"
     },
     {
       "type": "image",
-      "name": "mockup_5",
-      "url": "images/mockup_5.png"
+      "name": "cover_5",
+      "url": "images/cover_5.png"
     },
     {
       "type": "image",
-      "name": "mockup_6",
-      "url": "images/mockup_6.png"
+      "name": "cover_6",
+      "url": "images/cover_6.png"
     },
     {
       "type": "image",
-      "name": "mockup_7",
-      "url": "images/mockup_7.png"
+      "name": "cover_7",
+      "url": "images/cover_7.png"
     },
     {
       "type": "image",
-      "name": "mockup_8",
-      "url": "images/mockup_8.png"
+      "name": "cover_8",
+      "url": "images/cover_8.png"
     },
     {
       "type": "image",
-      "name": "mockup_9",
-      "url": "images/mockup_9.png"
+      "name": "cover_9",
+      "url": "images/cover_9.png"
+    },
+    {
+      "type": "image",
+      "name": "cover_10",
+      "url": "images/cover_10.png"
+    },
+    {
+      "type": "image",
+      "name": "cover_11",
+      "url": "images/cover_11.png"
+    },
+    {
+      "type": "image",
+      "name": "cover_12",
+      "url": "images/cover_12.png"
+    },
+    {
+      "type": "image",
+      "name": "button",
+      "url": "images/button.png"
     }
   ],
   "prefabs": {
@@ -84,9 +99,25 @@
       "options": {
         "type": "MemoryBoard",
         "rowCount": 4,
-        "columnCount": 4,
+        "columnCount": 6,
         "group": "game",
-        "covers": ["mockup_0", "mockup_1", "mockup_2", "mockup_3", "mockup_4", "mockup_5", "mockup_6", "mockup_7", "mockup_8", "mockup_9"]
+        "backCover": "cover_back",
+        "width": 1000,
+        "height": 1000,
+        "covers": [
+          "cover_1",
+          "cover_2",
+          "cover_3",
+          "cover_4",
+          "cover_5",
+          "cover_6",
+          "cover_7",
+          "cover_8",
+          "cover_9",
+          "cover_10",
+          "cover_11",
+          "cover_12"
+        ]
       }
     },
     "ai": {
@@ -97,51 +128,68 @@
     },
     "restartButton": {
       "options": {
-        "type": "ImageButton",
+        "type": "TextButton",
+        "text": "Restart",
         "animation": "tint",
         "animationDuration": 50,
-        "key": "sample",
+        "key": "button",
+        "group": "ui",
         "position": {
-          "x": 0,
-          "y": 0,
-          "relative": true
+          "x": 1000,
+          "y": 50,
+          "relative": false
         },
         "anchor": {
           "x": 0,
           "y": 0
         },
         "width": {
-          "value": 100
+          "value": 185
         },
         "height": {
-          "value": 100
-        }
+          "value": 57
+        },
+        "textAlign": "center",
+        "vTextAlign": "center",
+        "textAnchor": {
+          "x": 0.5,
+          "y": 0.5
+        },
+        "fontColor": "#ffffff",
+        "typo": "body",
+        "strokeColor": "#000000",
+        "strokeWidth": 2
       }
     },
     "playerPoints": {
       "options": {
         "type": "Text",
+        "group": "ui",
         "position": {
-          "x": 0,
-          "y": 0.1,
-          "relative": true
+          "x": 183,
+          "y": 50,
+          "relative": false
         },
         "text": "Player: ",
-        "fontColor": "#ff0000",
-        "typo": "heading"
+        "fontColor": "#ffffff",
+        "typo": "subheading",
+        "strokeColor": "#000000",
+        "strokeWidth": 4
       }
     },
     "aiPoints": {
       "options": {
         "type": "Text",
+        "group": "ui",
         "position": {
-          "x": 0.5,
-          "y": 0.1,
-          "relative": true
+          "x": 183,
+          "y": 110,
+          "relative": false
         },
         "text": "AI: ",
-        "fontColor": "#ff0000",
-        "typo": "heading"
+        "fontColor": "#ffffff",
+        "typo": "subheading",
+        "fontFamily": "bridgnorth"
       }
     }
   }

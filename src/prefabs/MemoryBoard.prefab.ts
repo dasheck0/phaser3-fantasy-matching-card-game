@@ -10,6 +10,8 @@ export interface MemoryBoardOptions extends BaseOptions {
   group: string;
   covers: string[];
   backCover: string;
+  width: number;
+  height: number;
 }
 
 export type PlayerType = 'human' | 'ai';
@@ -34,7 +36,7 @@ export default class MemoryBoard implements BasePrefab {
       rowCount: options.rowCount,
       columnCount: options.columnCount,
       position: { x: 0.5, y: 0.5, relative: true },
-      dimension: { width: 500, height: 500 },
+      dimension: { width: options.width, height: options.height },
       group: 'game',
     });
 
@@ -61,8 +63,8 @@ export default class MemoryBoard implements BasePrefab {
       for (let y = 0; y < this.options.rowCount; y++) {
         const tile = new Tile(`tile_${x}_${y}`, this.scene, {
           key: sampleAndConsume(coversToConsume),
-          backKey: 'sample',
-          group: 'game',
+          backKey: this.options.backCover,
+          group: this.options.group,
           type: 'Sprite',
           onFaceRevealed: this.onFaceRevealed.bind(this),
           onFaceRevealStarted: this.onFaceRevealStarted.bind(this),

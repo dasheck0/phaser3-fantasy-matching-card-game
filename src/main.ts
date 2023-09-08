@@ -7,6 +7,20 @@ import GameScene from './scenes/game/GameScene';
   const modules = await import.meta.glob('./**/*.prefab.ts');
   await PrefabStore.getInstance().loadPrefabs(modules);
 
+  Config.getInstance().enviroment = {
+    dimension: {
+      width: 1366,
+      height: 1366,
+    },
+    backgroundColor: '#000000',
+    debug: true,
+    typography: {
+      fontFamily: 'bridgnorth',
+      baseFontSize: 32,
+      scale: 'minor_third',
+    },
+  };
+
   Config.getInstance().enviroment.debug = false;
 
   const config: Phaser.Types.Core.GameConfig = {
