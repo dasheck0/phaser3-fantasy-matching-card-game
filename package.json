@@ -6,7 +6,11 @@
   "scripts": {
     "start": "vite",
     "build": "vite build",
-    "build:production": "vite build --mode production"
+    "build:production": "vite build --mode production",
+    "release": "git checkout master && git merge develop && git push origin master --tags && git checkout develop && git push origin develop",
+    "release:patch": "npm version patch && npm run release",
+    "release:minor": "npm version minor && npm run release",
+    "release:major": "npm version major && npm run release"
   },
   "author": "Stefan Neidig <s.neidig@nanogiants.de> (https://appcom-interactive.de/)",
   "license": "MIT",
