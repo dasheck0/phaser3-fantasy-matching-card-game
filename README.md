@@ -31,7 +31,7 @@ Checkout the repo run `npm i` and then `npm start`.
 ## Contributing
 <!-- section: Contributing -->
 <!-- Describe what action one should take in order to contribute. Does a certain styleguide has to be adhered. How can one apply changes (i.e. push vs. pull request)? -->
-Bug reports and pull requests are welcome on GitHub at {URL}. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the Contributor Covenant code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/dasheck0/phaser3-fantasy-matching-card-game/issues. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the Contributor Covenant code of conduct.
 
 ## License
 <!-- section: License -->
