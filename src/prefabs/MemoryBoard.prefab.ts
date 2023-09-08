@@ -78,8 +78,6 @@ export default class MemoryBoard implements BasePrefab {
     this.setGameOver(false);
     this.playersTurn = 'human';
     this.playerPhase = 'first';
-
-    console.log('initialized', this.playerPhase, this.playersTurn, this.tiles);
   }
 
   shutdown(): void {
@@ -114,8 +112,6 @@ export default class MemoryBoard implements BasePrefab {
     }
 
     const revealedTiles = this.tiles.filter(tile => tile.getCurrentState() === 'front');
-    console.log('tile revealed', tile, newFace, revealedTiles, this.tiles);
-
     if (revealedTiles.length === 2 && revealedTiles.every(tile => tile.getCurrentState() === 'front')) {
       this.lock(true);
 
@@ -134,8 +130,6 @@ export default class MemoryBoard implements BasePrefab {
     }
 
     if (revealedTiles.length === 0) {
-      console.log("No tiles revealed. It's the next player's turn");
-
       this.lock(false);
       this.togglePlayerTurn();
     }
@@ -160,18 +154,9 @@ export default class MemoryBoard implements BasePrefab {
   }
 
   public update(): void {
-    console.log(
-      'Update',
-      this.gameOver,
-      this.playersTurn,
-      this.canMakeMove(),
-      this.tiles.some(tile => tile.isTileLocked()),
-    );
-
     if (!this.gameOver) {
       if (this.playersTurn === 'ai' && this.canMakeMove() && this.aiPlayer) {
         if (this.playerPhase === 'first') {
-          console.log('first phase');
           const gridPosition = this.aiPlayer.performFirstAction(this.tiles);
           const tile = this.tiles.find(tile => tile.getGridPosition().x === gridPosition.x && tile.getGridPosition().y === gridPosition.y);
 
@@ -180,7 +165,6 @@ export default class MemoryBoard implements BasePrefab {
             this.playerPhase = 'second';
           }
         } else if (this.playerPhase === 'second') {
-          console.log('second phase');
           const gridPosition = this.aiPlayer.performSecondAction(this.tiles);
           const tile = this.tiles.find(tile => tile.getGridPosition().x === gridPosition.x && tile.getGridPosition().y === gridPosition.y);
 

@@ -71,14 +71,12 @@ export default class Tile implements BasePrefab {
 
     this.sprite.on('pointerup', (pointer: PointerEvent) => {
       if (this.pointIntersectsRectangle({ x: pointer.x, y: pointer.y }, this.sprite.getBounds()) && !this.isLockedForPlayer) {
-        console.log('on pointer down', this, this.isLockedForPlayer);
         this.toggle();
       }
     });
 
     this.backSprite.on('pointerup', (pointer: PointerEvent) => {
       if (this.pointIntersectsRectangle({ x: pointer.x, y: pointer.y }, this.sprite.getBounds()) && !this.isLockedForPlayer) {
-        console.log('on pointer down', this, this.isLockedForPlayer);
         this.toggle();
       }
     });
@@ -107,8 +105,6 @@ export default class Tile implements BasePrefab {
     this.isLocked = false;
     this.isLockedForPlayer = false;
     this.isCurrentlyAnimating = false;
-
-    console.log('tile', this.currentFace);
   }
 
   shutdown(): void {

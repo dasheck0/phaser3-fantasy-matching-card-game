@@ -7,8 +7,6 @@ export class GameOverGameState extends GameStateNs.GameState {
   }
 
   onEnter(): void {
-    console.log('The game is over. Press the button');
-
     const restartButton = PrefabStore.getInstance().getPrefab<ImageButton>('restartButton');
 
     restartButton.onClick(() => {

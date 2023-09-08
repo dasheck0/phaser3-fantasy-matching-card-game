@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/dasheck0/phaser-boilerplate/master/schemas/scene.schema.json",
   "scenes": [],
-  "groups": ["background", "game", "ui"],
+  "groups": ["hidden", "background", "game", "ui"],
   "assets": [
     {
       "type": "image",
@@ -123,7 +123,8 @@
     "ai": {
       "options": {
         "type": "AIPlayer",
-        "memorySize": 10
+        "memorySize": 10,
+        "group": "hidden"
       }
     },
     "restartButton": {
@@ -190,6 +191,12 @@
         "fontColor": "#ffffff",
         "typo": "subheading",
         "fontFamily": "bridgnorth"
+      }
+    },
+    "scoreboard": {
+      "options": {
+        "type": "Scoreboard",
+        "group": "hidden"
       }
     }
   }

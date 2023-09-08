@@ -1,6 +1,7 @@
 import { GameStateNs, PrefabStore, Text } from '@dasheck0/phaser-boilerplate';
 import AIPlayer from '../../../prefabs/AIPlayer.prefab';
 import MemoryBoard from '../../../prefabs/MemoryBoard.prefab';
+import ScoreBoard from '../../../prefabs/Scoreboard.prefab';
 import { GameState } from './states';
 
 export class PreGameGameState extends GameStateNs.GameState {
@@ -13,6 +14,7 @@ export class PreGameGameState extends GameStateNs.GameState {
     PrefabStore.getInstance().getPrefab<Text>('aiPoints').setText(`AI: 0`);
     PrefabStore.getInstance().getPrefab<MemoryBoard>('gameboard').restart();
     PrefabStore.getInstance().getPrefab<AIPlayer>('ai').initialize();
+    PrefabStore.getInstance().getPrefab<ScoreBoard>('scoreboard').initialize();
 
     this.finiteStateMachine?.transitionTo(GameState.GAME);
   }
