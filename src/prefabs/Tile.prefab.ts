@@ -5,7 +5,7 @@ export interface TileOptions extends BaseOptions {
   backKey: string;
   group: string;
   onFaceRevealStarted: (tile: Tile) => void;
-  onFaceRevealed: (tile: Tile) => void;
+  onFaceRevealed: (tile: Tile, newFace: TileFace) => void;
   gridPosition: Vector2;
 }
 
@@ -26,7 +26,7 @@ export default class Tile implements BasePrefab {
 
   private currentFace: TileFace = 'back';
 
-  private onFaceRevealed: (tile: Tile) => void;
+  private onFaceRevealed: (tile: Tile, newFace: TileFace) => void;
   private onFaceRevealStarted: (tile: Tile) => void;
 
   private isCurrentlyAnimating = false;
@@ -34,7 +34,7 @@ export default class Tile implements BasePrefab {
   private isLocked = false;
   private isLockedForPlayer = false;
 
-  private readonly animationDuration = 250;
+  private readonly animationDuration = 300;
 
   private uniqueId = Math.random();
 
@@ -69,8 +69,16 @@ export default class Tile implements BasePrefab {
       yoyo: true,
     });
 
-    this.scene.input.on('pointerup', (pointer: PointerEvent) => {
+    this.sprite.on('pointerup', (pointer: PointerEvent) => {
       if (this.pointIntersectsRectangle({ x: pointer.x, y: pointer.y }, this.sprite.getBounds()) && !this.isLockedForPlayer) {
+        console.log('on pointer down', this, this.isLockedForPlayer);
+        this.toggle();
+      }
+    });
+
+    this.backSprite.on('pointerup', (pointer: PointerEvent) => {
+      if (this.pointIntersectsRectangle({ x: pointer.x, y: pointer.y }, this.sprite.getBounds()) && !this.isLockedForPlayer) {
+        console.log('on pointer down', this, this.isLockedForPlayer);
         this.toggle();
       }
     });
@@ -96,9 +104,21 @@ export default class Tile implements BasePrefab {
 
   initialize(): void {
     this.show({ face: 'back', force: true });
+    this.isLocked = false;
+    this.isLockedForPlayer = false;
+    this.isCurrentlyAnimating = false;
+
+    console.log('tile', this.currentFace);
   }
 
   shutdown(): void {
+    this.sprite.off('pointerover');
+    this.sprite.off('pointerout');
+    this.sprite.off('pointerup');
+    this.backSprite.off('pointerover');
+    this.backSprite.off('pointerout');
+    this.backSprite.off('pointerup');
+
     this.hoverTween.destroy();
     this.sprite.destroy();
     this.backSprite.destroy();
@@ -165,7 +185,7 @@ export default class Tile implements BasePrefab {
 
               this.currentFace = face;
 
-              this.onFaceRevealed(this);
+              this.onFaceRevealed(this, this.currentFace);
             },
           });
         } else {

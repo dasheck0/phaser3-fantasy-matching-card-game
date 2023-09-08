@@ -2,7 +2,7 @@ import { BaseOptions, BasePrefab, BaseScene, PrefabStore, RegisterPrefab } from 
 import { sampleAndConsume } from '../utils';
 import AIPlayer from './AIPlayer.prefab';
 import Grid from './Grid.prefab';
-import Tile from './Tile.prefab';
+import Tile, { TileFace } from './Tile.prefab';
 
 export interface MemoryBoardOptions extends BaseOptions {
   rowCount: number;
@@ -22,7 +22,7 @@ export default class MemoryBoard implements BasePrefab {
   private tiles: Tile[] = [];
 
   private playersTurn: PlayerType = 'human';
-  private aiPlayerPhase: 'first' | 'second' = 'first';
+  private playerPhase: 'first' | 'second' = 'first';
 
   private aiPlayer: AIPlayer | null = null;
 
@@ -54,8 +54,6 @@ export default class MemoryBoard implements BasePrefab {
   initialize(): void {
     this.aiPlayer = PrefabStore.getInstance().getPrefab<AIPlayer>('ai');
     this.tiles = [];
-    this.setGameOver(false);
-    this.playersTurn = 'human';
 
     const coversToConsume = this.constructConsumableCoversArray();
 
@@ -78,10 +76,15 @@ export default class MemoryBoard implements BasePrefab {
 
     this.grid.setItems(this.tiles);
     this.setGameOver(false);
+    this.playersTurn = 'human';
+    this.playerPhase = 'first';
+
+    console.log('initialized', this.playerPhase, this.playersTurn, this.tiles);
   }
 
   shutdown(): void {
     this.tiles.forEach(tile => tile.shutdown());
+    this.tiles = [];
   }
 
   restart(): void {
@@ -105,16 +108,18 @@ export default class MemoryBoard implements BasePrefab {
     this.lock(true);
   }
 
-  private onFaceRevealed(tile: Tile): void {
-    this.aiPlayer?.recordAction(tile, tile.getGridPosition());
+  private onFaceRevealed(tile: Tile, newFace: TileFace): void {
+    if (newFace === 'front') {
+      this.aiPlayer?.recordAction(tile, tile.getGridPosition());
+    }
 
     const revealedTiles = this.tiles.filter(tile => tile.getCurrentState() === 'front');
-    console.log('revealedTiles', revealedTiles, tile);
+    console.log('tile revealed', tile, newFace, revealedTiles, this.tiles);
 
-    if (revealedTiles.length === 2) {
+    if (revealedTiles.length === 2 && revealedTiles.every(tile => tile.getCurrentState() === 'front')) {
       this.lock(true);
 
-      this.delay(500).then(() => {
+      this.delay(1000).then(() => {
         this.lock(false);
 
         if (this.checkIfTilesMatch(revealedTiles)) {
@@ -129,6 +134,8 @@ export default class MemoryBoard implements BasePrefab {
     }
 
     if (revealedTiles.length === 0) {
+      console.log("No tiles revealed. It's the next player's turn");
+
       this.lock(false);
       this.togglePlayerTurn();
     }
@@ -153,25 +160,33 @@ export default class MemoryBoard implements BasePrefab {
   }
 
   public update(): void {
+    console.log(
+      'Update',
+      this.gameOver,
+      this.playersTurn,
+      this.canMakeMove(),
+      this.tiles.some(tile => tile.isTileLocked()),
+    );
+
     if (!this.gameOver) {
       if (this.playersTurn === 'ai' && this.canMakeMove() && this.aiPlayer) {
-        if (this.aiPlayerPhase === 'first') {
+        if (this.playerPhase === 'first') {
           console.log('first phase');
           const gridPosition = this.aiPlayer.performFirstAction(this.tiles);
           const tile = this.tiles.find(tile => tile.getGridPosition().x === gridPosition.x && tile.getGridPosition().y === gridPosition.y);
 
           if (tile) {
             tile.toggle(true);
-            this.aiPlayerPhase = 'second';
+            this.playerPhase = 'second';
           }
-        } else if (this.aiPlayerPhase === 'second') {
+        } else if (this.playerPhase === 'second') {
           console.log('second phase');
           const gridPosition = this.aiPlayer.performSecondAction(this.tiles);
           const tile = this.tiles.find(tile => tile.getGridPosition().x === gridPosition.x && tile.getGridPosition().y === gridPosition.y);
 
           if (tile) {
             tile.toggle(true);
-            this.aiPlayerPhase = 'first';
+            this.playerPhase = 'first';
           }
         }
       }

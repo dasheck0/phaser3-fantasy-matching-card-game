@@ -41,10 +41,10 @@ export default class AIPlayer implements BasePrefab {
   }
 
   performFirstAction(availableTiles: Tile[]): Vector2 {
-    console.log('Making first move. Searching memory', this.memory);
+    // console.log('Making first move. Searching memory', this.memory);
 
     const memoryItemsThatHaveTheSameCoverKey = this.memory.filter((item, index, array) => {
-      console.log('Checking item', item);
+      // console.log('Checking item', item);
 
       return array.some((otherItem, otherIndex) => {
         const relevantIndex = Math.max(index, otherIndex);
@@ -52,30 +52,30 @@ export default class AIPlayer implements BasePrefab {
       });
     });
 
-    console.log('Found memory items that have the same cover key', memoryItemsThatHaveTheSameCoverKey);
+    // console.log('Found memory items that have the same cover key', memoryItemsThatHaveTheSameCoverKey);
 
     if (memoryItemsThatHaveTheSameCoverKey.length > 0) {
-      console.log('Found a pair. Will remember this for my second move');
+      // console.log('Found a pair. Will remember this for my second move');
 
       this.foundPair = true;
       return memoryItemsThatHaveTheSameCoverKey[0].gridPosition;
     }
 
-    console.log('Found nothing. Will make a random move');
+    // console.log('Found nothing. Will make a random move');
     return sample(availableTiles)?.getGridPosition();
   }
 
   performSecondAction(availableTiles: Tile[]): Vector2 {
-    console.log('Making second move. Searching memory', this.memory);
+    // console.log('Making second move. Searching memory', this.memory);
 
     const openTile = availableTiles.find(tile => tile.getCurrentState() === 'front');
     const closedTiles = availableTiles.filter(tile => tile.getCurrentState() === 'back');
 
-    console.log('Open tile', openTile);
-    console.log('Closed tiles', closedTiles);
+    // console.log('Open tile', openTile);
+    // console.log('Closed tiles', closedTiles);
 
     if (openTile) {
-      console.log('There is an open tile. Did I found a pair?', this.foundPair);
+      // console.log('There is an open tile. Did I found a pair?', this.foundPair);
 
       const matchingTile = this.memory.find((item, index) => {
         if (item.tile.getUniqueId() === openTile.getUniqueId()) {
@@ -86,13 +86,13 @@ export default class AIPlayer implements BasePrefab {
       });
 
       if (matchingTile) {
-        console.log('Found a matching tile. Will remember this for my first move');
+        // console.log('Found a matching tile. Will remember this for my first move');
         this.foundPair = false;
         return matchingTile.gridPosition;
       }
     }
 
-    console.log('Found nothing. Will make a random move');
+    // console.log('Found nothing. Will make a random move');
     return sample(closedTiles).getGridPosition();
   }
 
