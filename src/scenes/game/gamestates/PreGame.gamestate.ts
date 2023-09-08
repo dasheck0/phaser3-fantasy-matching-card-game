@@ -1,18 +1,20 @@
-import { GameStateNs, ImageButton, PrefabStore } from '@dasheck0/phaser-boilerplate';
+import { GameStateNs, PrefabStore, Text } from '@dasheck0/phaser-boilerplate';
+import AIPlayer from '../../../prefabs/AIPlayer.prefab';
 import MemoryBoard from '../../../prefabs/MemoryBoard.prefab';
+import { GameState } from './states';
 
 export class PreGameGameState extends GameStateNs.GameState {
   canTransitionTo(): string[] {
-    return [];
+    return [GameState.GAME];
   }
 
   onEnter(): void {
-    const restartButton = PrefabStore.getInstance().getPrefab<ImageButton>('restartButton');
-    const memoryBoard = PrefabStore.getInstance().getPrefab<MemoryBoard>('gameboard');
+    PrefabStore.getInstance().getPrefab<Text>('playerPoints').setText(`Player: 0`);
+    PrefabStore.getInstance().getPrefab<Text>('aiPoints').setText(`AI: 0`);
+    PrefabStore.getInstance().getPrefab<MemoryBoard>('gameboard').restart();
+    PrefabStore.getInstance().getPrefab<AIPlayer>('ai').initialize();
 
-    restartButton.onClick(() => {
-      memoryBoard.restart();
-    });
+    this.finiteStateMachine?.transitionTo(GameState.GAME);
   }
 
   onExit(): void {}
@@ -20,6 +22,6 @@ export class PreGameGameState extends GameStateNs.GameState {
   update(): void {}
 
   getName(): string {
-    return 'PreGame';
+    return GameState.PRE_GAME;
   }
 }

@@ -89,6 +89,12 @@
         "covers": ["mockup_0", "mockup_1", "mockup_2", "mockup_3", "mockup_4", "mockup_5", "mockup_6", "mockup_7", "mockup_8", "mockup_9"]
       }
     },
+    "ai": {
+      "options": {
+        "type": "AIPlayer",
+        "memorySize": 10
+      }
+    },
     "restartButton": {
       "options": {
         "type": "ImageButton",
@@ -110,6 +116,32 @@
         "height": {
           "value": 100
         }
+      }
+    },
+    "playerPoints": {
+      "options": {
+        "type": "Text",
+        "position": {
+          "x": 0,
+          "y": 0.1,
+          "relative": true
+        },
+        "text": "Player: ",
+        "fontColor": "#ff0000",
+        "typo": "heading"
+      }
+    },
+    "aiPoints": {
+      "options": {
+        "type": "Text",
+        "position": {
+          "x": 0.5,
+          "y": 0.1,
+          "relative": true
+        },
+        "text": "AI: ",
+        "fontColor": "#ff0000",
+        "typo": "heading"
       }
     }
   }

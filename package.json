@@ -9,7 +9,7 @@
   "author": "Stefan Neidig <s.neidig@nanogiants.de> (https://appcom-interactive.de/)",
   "license": "MIT",
   "dependencies": {
-    "@dasheck0/phaser-boilerplate": "^1.2.2",
+    "@dasheck0/phaser-boilerplate": "^1.2.3",
     "phaser": "^3.60.0"
   },
   "devDependencies": {

@@ -4,10 +4,19 @@ export interface TileOptions extends BaseOptions {
   key: string;
   backKey: string;
   group: string;
+  onFaceRevealStarted: (tile: Tile) => void;
   onFaceRevealed: (tile: Tile) => void;
+  gridPosition: Vector2;
 }
 
 export type TileFace = 'front' | 'back';
+
+export interface ShowOptions {
+  animate?: boolean;
+  force?: boolean;
+  face: TileFace;
+  animationDelay?: number;
+}
 
 export default class Tile implements BasePrefab {
   protected sprite: Sprite;
@@ -18,13 +27,20 @@ export default class Tile implements BasePrefab {
   private currentFace: TileFace = 'back';
 
   private onFaceRevealed: (tile: Tile) => void;
+  private onFaceRevealStarted: (tile: Tile) => void;
 
   private isCurrentlyAnimating = false;
 
   private isLocked = false;
+  private isLockedForPlayer = false;
+
+  private readonly animationDuration = 250;
+
+  private uniqueId = Math.random();
 
   constructor(private readonly name: string, private readonly scene: BaseScene, private readonly options: TileOptions) {
     this.onFaceRevealed = options.onFaceRevealed;
+    this.onFaceRevealStarted = options.onFaceRevealStarted;
 
     this.sprite = new Sprite(name, scene, {
       position: { x: 0, y: 0 },
@@ -54,8 +70,7 @@ export default class Tile implements BasePrefab {
     });
 
     this.scene.input.on('pointerup', (pointer: PointerEvent) => {
-      if (this.pointIntersectsRectangle({ x: pointer.x, y: pointer.y }, this.sprite.getBounds())) {
-        console.log('up', pointer);
+      if (this.pointIntersectsRectangle({ x: pointer.x, y: pointer.y }, this.sprite.getBounds()) && !this.isLockedForPlayer) {
         this.toggle();
       }
     });
@@ -80,7 +95,7 @@ export default class Tile implements BasePrefab {
   }
 
   initialize(): void {
-    this.show('back', false, true);
+    this.show({ face: 'back', force: true });
   }
 
   shutdown(): void {
@@ -103,8 +118,20 @@ export default class Tile implements BasePrefab {
     return this.options.key;
   }
 
-  show(face: TileFace, animate = true, force = false): void {
-    if (!this.isCurrentlyAnimating && !this.isLocked) {
+  getGridPosition(): Vector2 {
+    return this.options.gridPosition;
+  }
+
+  isTileLocked(): boolean {
+    return this.isLocked;
+  }
+
+  getUniqueId(): number {
+    return this.uniqueId;
+  }
+
+  show({ face, animate, force, animationDelay }: ShowOptions): void {
+    if ((!this.isCurrentlyAnimating && !this.isLocked) || force) {
       if (this.currentFace !== face || force) {
         const appearingSprite = face === 'front' ? this.sprite : this.backSprite;
         const disappearingSprite = face === 'front' ? this.backSprite : this.sprite;
@@ -113,28 +140,34 @@ export default class Tile implements BasePrefab {
           this.isCurrentlyAnimating = true;
           this.hoverTween.pause();
 
+          this.onFaceRevealStarted(this);
+
           this.scene.tweens.add({
             targets: [disappearingSprite],
-            duration: 250,
+            duration: this.animationDuration,
             scaleX: { from: 1, to: 0 },
             scaleY: { from: 1, to: 0 },
             alpha: { from: 1, to: 0 },
+            delay: animationDelay ?? 0,
           });
 
           this.scene.tweens.add({
             targets: [appearingSprite],
-            duration: 250,
+            duration: this.animationDuration,
             scaleX: { from: 0, to: 1 },
             scaleY: { from: 0, to: 1 },
             alpha: { from: 0, to: 1 },
+            delay: animationDelay ?? 0,
             onComplete: () => {
               this.isCurrentlyAnimating = false;
+              appearingSprite.setVisible(true);
+              disappearingSprite.setVisible(false);
+
+              this.currentFace = face;
+
               this.onFaceRevealed(this);
             },
           });
-
-          appearingSprite.setVisible(true);
-          disappearingSprite.setVisible(false);
         } else {
           appearingSprite.setVisible(true);
           appearingSprite.setScale(1);
@@ -144,17 +177,15 @@ export default class Tile implements BasePrefab {
           disappearingSprite.setScale(0);
           disappearingSprite.setAlpha(0);
 
-          this.onFaceRevealed(this);
+          this.currentFace = face;
         }
-
-        this.currentFace = face;
       }
     }
   }
 
   toggle(animate = true): void {
     if (!this.isLocked) {
-      this.show(this.currentFace === 'front' ? 'back' : 'front', animate);
+      this.show({ face: this.currentFace === 'front' ? 'back' : 'front', animate });
     }
   }
 
@@ -164,6 +195,10 @@ export default class Tile implements BasePrefab {
 
   public lock(isLocked: boolean): void {
     this.isLocked = isLocked;
+  }
+
+  public lockForPlayer(isLocked: boolean): void {
+    this.isLockedForPlayer = isLocked;
   }
 
   private pointIntersectsRectangle(point: Vector2, rectangle: Phaser.Geom.Rectangle): boolean {

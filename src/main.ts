@@ -7,7 +7,7 @@ import GameScene from './scenes/game/GameScene';
   const modules = await import.meta.glob('./**/*.prefab.ts');
   await PrefabStore.getInstance().loadPrefabs(modules);
 
-  Config.getInstance().enviroment.debug = true;
+  Config.getInstance().enviroment.debug = false;
 
   const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,

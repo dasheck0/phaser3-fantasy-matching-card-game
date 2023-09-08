@@ -1,5 +1,6 @@
-import { BaseOptions, BasePrefab, BaseScene, RegisterPrefab } from '@dasheck0/phaser-boilerplate';
+import { BaseOptions, BasePrefab, BaseScene, PrefabStore, RegisterPrefab } from '@dasheck0/phaser-boilerplate';
 import { sampleAndConsume } from '../utils';
+import AIPlayer from './AIPlayer.prefab';
 import Grid from './Grid.prefab';
 import Tile from './Tile.prefab';
 
@@ -11,10 +12,22 @@ export interface MemoryBoardOptions extends BaseOptions {
   backCover: string;
 }
 
+export type PlayerType = 'human' | 'ai';
+
 @RegisterPrefab('MemoryBoard')
 export default class MemoryBoard implements BasePrefab {
   private grid: Grid;
   private tiles: Tile[] = [];
+
+  private playersTurn: PlayerType = 'human';
+  private aiPlayerPhase: 'first' | 'second' = 'first';
+
+  private aiPlayer: AIPlayer | null = null;
+
+  private gameOver = false;
+
+  private onPairFound?: (tile: Tile[], player: PlayerType) => void;
+  private onGameOver?: () => void;
 
   constructor(private readonly name: string, private readonly scene: BaseScene, private readonly options: MemoryBoardOptions) {
     this.grid = new Grid('gameboard', scene, {
@@ -28,8 +41,19 @@ export default class MemoryBoard implements BasePrefab {
     this.grid.initialize();
   }
 
+  public setOnPairFound(onPairFound: (tile: Tile[], player: PlayerType) => void): void {
+    this.onPairFound = onPairFound;
+  }
+
+  public setOnGameOver(onGameOver: () => void): void {
+    this.onGameOver = onGameOver;
+  }
+
   initialize(): void {
+    this.aiPlayer = PrefabStore.getInstance().getPrefab<AIPlayer>('ai');
     this.tiles = [];
+    this.setGameOver(false);
+    this.playersTurn = 'human';
 
     const coversToConsume = this.constructConsumableCoversArray();
 
@@ -41,6 +65,8 @@ export default class MemoryBoard implements BasePrefab {
           group: 'game',
           type: 'Sprite',
           onFaceRevealed: this.onFaceRevealed.bind(this),
+          onFaceRevealStarted: this.onFaceRevealStarted.bind(this),
+          gridPosition: { x, y },
         });
 
         tile.initialize();
@@ -49,6 +75,7 @@ export default class MemoryBoard implements BasePrefab {
     }
 
     this.grid.setItems(this.tiles);
+    this.setGameOver(false);
   }
 
   shutdown(): void {
@@ -64,24 +91,92 @@ export default class MemoryBoard implements BasePrefab {
     this.tiles.forEach(tile => tile.lock(isLocked));
   }
 
-  private onFaceRevealed(): void {
+  public lockForPlayer(isLocked: boolean): void {
+    this.tiles.forEach(tile => tile.lockForPlayer(isLocked));
+  }
+
+  private canMakeMove(): boolean {
+    return !this.tiles.some(tile => tile.isTileLocked());
+  }
+
+  private onFaceRevealStarted(tile: Tile): void {
+    this.lock(true);
+  }
+
+  private onFaceRevealed(tile: Tile): void {
+    this.aiPlayer?.recordAction(tile, tile.getGridPosition());
+
     const revealedTiles = this.tiles.filter(tile => tile.getCurrentState() === 'front');
-    console.log('revealedTiles', revealedTiles);
+    console.log('revealedTiles', revealedTiles, tile);
 
     if (revealedTiles.length === 2) {
+      this.lock(true);
+
       this.delay(500).then(() => {
+        this.lock(false);
+
         if (this.checkIfTilesMatch(revealedTiles)) {
+          this.onPairFound?.(revealedTiles, this.playersTurn);
           this.removeTilesFromGame(revealedTiles);
           this.lock(false);
         } else {
-          revealedTiles.forEach(tile => tile.show('back'));
           this.lock(true);
+          revealedTiles.forEach((tile, index) => tile.show({ face: 'back', animate: true, force: true }));
         }
       });
     }
 
     if (revealedTiles.length === 0) {
       this.lock(false);
+      this.togglePlayerTurn();
+    }
+
+    if (revealedTiles.length === 1) {
+      this.lock(false);
+    }
+  }
+
+  public togglePlayerTurn(): void {
+    this.playersTurn = this.playersTurn === 'human' ? 'ai' : 'human';
+  }
+
+  public setGameOver(gameOver: boolean): void {
+    this.gameOver = gameOver;
+    this.lock(gameOver);
+    this.lockForPlayer(gameOver);
+
+    if (this.gameOver) {
+      this.onGameOver?.();
+    }
+  }
+
+  public update(): void {
+    if (!this.gameOver) {
+      if (this.playersTurn === 'ai' && this.canMakeMove() && this.aiPlayer) {
+        if (this.aiPlayerPhase === 'first') {
+          console.log('first phase');
+          const gridPosition = this.aiPlayer.performFirstAction(this.tiles);
+          const tile = this.tiles.find(tile => tile.getGridPosition().x === gridPosition.x && tile.getGridPosition().y === gridPosition.y);
+
+          if (tile) {
+            tile.toggle(true);
+            this.aiPlayerPhase = 'second';
+          }
+        } else if (this.aiPlayerPhase === 'second') {
+          console.log('second phase');
+          const gridPosition = this.aiPlayer.performSecondAction(this.tiles);
+          const tile = this.tiles.find(tile => tile.getGridPosition().x === gridPosition.x && tile.getGridPosition().y === gridPosition.y);
+
+          if (tile) {
+            tile.toggle(true);
+            this.aiPlayerPhase = 'first';
+          }
+        }
+      }
+
+      if (this.tiles.length === 0) {
+        this.setGameOver(true);
+      }
     }
   }
 
@@ -90,6 +185,8 @@ export default class MemoryBoard implements BasePrefab {
   }
 
   private removeTilesFromGame(tiles: Tile[]): void {
+    this.aiPlayer?.forgetAllTilesWithCoverKey(tiles[0].getCoverKey());
+
     this.tiles = this.tiles.filter(tile => !tiles.includes(tile));
     tiles.forEach(tile => tile.shutdown());
   }
